@@ -1,0 +1,27 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "usb_c_status": {
+        "default": "mdi:power-plug"
+      }
+    },
+    "button": {
+      "refresh_measurements": {
+        "default": "mdi:refresh"
+      },
+      "silence_alarm": {
+        "default": "mdi:bell-cancel"
+      }
+    },
+    "select": {
+      "time_format": {
+        "default": "mdi:clock-outline"
+      }
+    },
+    "sensor": {
+      "firmware": {
+        "default": "mdi:chip"
+      }
+    }
+  }
+}

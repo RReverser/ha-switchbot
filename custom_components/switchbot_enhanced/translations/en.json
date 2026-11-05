@@ -1,0 +1,249 @@
+{
+  "config": {
+    "abort": {
+      "already_configured_device": "Device is already configured",
+      "api_error": "Error while communicating with SwitchBot API: {error_detail}",
+      "no_devices_found": "No supported SwitchBot devices found in range; If the device is in range, ensure the scanner has active scanning enabled, as SwitchBot devices cannot be discovered with passive scans. Active scans can be disabled once the device is configured. If you need clarification on whether the device is in-range, download the diagnostics for the integration that provides your Bluetooth adapter or proxy and check if the MAC address of the SwitchBot device is present.",
+      "switchbot_unsupported_type": "Unsupported SwitchBot type.",
+      "unknown": "Unexpected error"
+    },
+    "error": {
+      "auth_failed": "Authentication failed: {error_detail}",
+      "encryption_key_invalid": "Key ID or encryption key is invalid",
+      "unknown": "Unexpected error"
+    },
+    "flow_title": "{name} ({address})",
+    "step": {
+      "cloud_login": {
+        "data": {
+          "password": "Password",
+          "username": "Username"
+        },
+        "data_description": {
+          "password": "The password of your SwitchBot account",
+          "username": "The username of your SwitchBot account"
+        },
+        "description": "Please provide your SwitchBot app username and password. This data won't be saved and is only used to retrieve device model information to automate discovery. Usernames and passwords are case-sensitive."
+      },
+      "confirm": {
+        "description": "Do you want to set up {name}?"
+      },
+      "encrypted_auth": {
+        "data": {
+          "password": "Password",
+          "username": "Username"
+        },
+        "data_description": {
+          "password": "The password of your SwitchBot account",
+          "username": "The username of your SwitchBot account"
+        },
+        "description": "Please provide your SwitchBot app username and password. This data won't be saved and only used to retrieve your device's encryption key. Usernames and passwords are case-sensitive."
+      },
+      "encrypted_choose_method": {
+        "description": "An encrypted SwitchBot device can be set up in Home Assistant in two different ways.\n\nYou can enter the key ID and encryption key yourself, or Home Assistant can import them from your SwitchBot account.",
+        "menu_options": {
+          "encrypted_auth": "SwitchBot account (recommended)",
+          "encrypted_key": "Enter encryption key manually"
+        }
+      },
+      "encrypted_key": {
+        "data": {
+          "encryption_key": "Encryption key",
+          "key_id": "Key ID"
+        },
+        "data_description": {
+          "encryption_key": "The encryption key for the device",
+          "key_id": "The ID of the encryption key"
+        },
+        "description": "The {name} device requires encryption key, details on how to obtain it can be found in the documentation."
+      },
+      "password": {
+        "data": {
+          "password": "Password"
+        },
+        "data_description": {
+          "password": "The password required for the Bot device access"
+        },
+        "description": "The {name} device requires a password"
+      },
+      "select_device": {
+        "data": {
+          "address": "MAC address"
+        },
+        "data_description": {
+          "address": "The Bluetooth MAC address of your SwitchBot device"
+        }
+      },
+      "user": {
+        "description": "One or more of your Bluetooth adapters is using passive scanning, which may not discover all SwitchBot devices. Would you like to sign in to your SwitchBot account to download device information and automate discovery? If you're not sure, we recommend signing in.",
+        "menu_options": {
+          "cloud_login": "Sign in to SwitchBot account",
+          "select_device": "Continue without signing in"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "usb_c_status": {
+        "name": "USB-C power"
+      }
+    },
+    "button": {
+      "force_co2_measurement": {
+        "name": "Force CO2 measurement"
+      },
+      "refresh_measurements": {
+        "name": "Refresh temperature and humidity"
+      },
+      "silence_alarm": {
+        "name": "Silence alarm"
+      },
+      "calibrate_co2": {
+        "name": "Calibrate CO2 sensor"
+      },
+      "sync_datetime": {
+        "name": "Sync date and time"
+      }
+    },
+    "number": {
+      "co2_threshold_good": {
+        "name": "CO2 air quality good threshold"
+      },
+      "co2_threshold_moderate": {
+        "name": "CO2 air quality moderate threshold"
+      },
+      "comfort_cold": {
+        "name": "Comfort temperature (cold limit)"
+      },
+      "comfort_dry": {
+        "name": "Comfort humidity (dry limit)"
+      },
+      "comfort_hot": {
+        "name": "Comfort temperature (hot limit)"
+      },
+      "comfort_wet": {
+        "name": "Comfort humidity (wet limit)"
+      },
+      "display_time_offset": {
+        "name": "Display time offset"
+      },
+      "humidity_offset": {
+        "name": "Humidity calibration offset"
+      },
+      "temperature_offset": {
+        "name": "Temperature calibration offset"
+      }
+    },
+    "select": {
+      "buzzer_volume": {
+        "name": "Buzzer alarm volume",
+        "state": {
+          "high": "High",
+          "low": "Low",
+          "medium": "Medium"
+        }
+      },
+      "co2_update_interval": {
+        "name": "CO2 measurement interval",
+        "state": {
+          "10m": "10 minutes",
+          "30m": "30 minutes",
+          "5m": "5 minutes"
+        }
+      },
+      "temperature_update_interval": {
+        "name": "Temperature measurement interval",
+        "state": {
+          "10m": "10 minutes",
+          "30m": "30 minutes",
+          "5m": "5 minutes"
+        }
+      },
+      "date_format": {
+        "name": "Date format",
+        "state": {
+          "dd_mm": "Day/Month (DD/MM)",
+          "mm_dd": "Month/Day (MM/DD)"
+        }
+      },
+      "weather_condition": {
+        "name": "Weather condition",
+        "state": {
+          "cloudy": "Cloudy",
+          "heavy_snow": "Heavy snow",
+          "none": "None",
+          "partly_cloudy": "Partly cloudy",
+          "pouring": "Pouring / Heavy rain",
+          "rainy": "Rainy",
+          "snowy": "Snowy",
+          "sunny": "Sunny"
+        }
+      },
+      "time_format": {
+        "name": "Time format",
+        "state": {
+          "12h": "12-hour (AM/PM)",
+          "24h": "24-hour"
+        }
+      }
+    },
+    "sensor": {
+      "firmware": {
+        "name": "Firmware"
+      },
+      "bluetooth_signal": {
+        "name": "Bluetooth signal"
+      }
+    },
+    "switch": {
+      "battery_indicator": {
+        "name": "Battery indicator"
+      },
+      "display_data_source": {
+        "name": "Outdoor sensor display"
+      },
+      "button_toggle_unit": {
+        "name": "Top button toggle °C / °F"
+      },
+      "button_toggle_data_source": {
+        "name": "Top button toggle indoor / outdoor"
+      },
+      "buzzer_sound": {
+        "name": "Buzzer alarm sound"
+      }
+    }
+  },
+  "exceptions": {
+    "advertising_state_error": {
+      "message": "{address} is not advertising state"
+    },
+    "device_not_found_error": {
+      "message": "Could not find Switchbot {sensor_type} with address {address}: {reason}"
+    },
+    "device_without_config_entry": {
+      "message": "The device ID {device_id} is not associated with a config entry."
+    },
+    "not_meter_pro_device": {
+      "message": "This service is only supported for SwitchBot Meter Pro and Meter Pro CO2 devices."
+    },
+    "operation_error": {
+      "message": "An error occurred while performing the action: {error}"
+    },
+    "value_error": {
+      "message": "Switchbot device initialization failed because of incorrect configuration parameters: {error}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "retry_count": "Retry count"
+        },
+        "data_description": {
+          "retry_count": "How many times to retry sending commands to your SwitchBot devices"
+        }
+      }
+    }
+  }
+}

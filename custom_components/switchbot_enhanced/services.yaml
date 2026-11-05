@@ -1,18 +1,3 @@
-add_password:
-  fields:
-    device_id:
-      required: true
-      example: "c2d01328efd261f586e56d914e3af07e"
-      selector:
-        device:
-          integration: switchbot
-    password:
-      required: true
-      example: "123456"
-      selector:
-        text:
-          type: password
-
 meter_pro_set_weather:
   name: "Meter Pro: Set Weather Condition Icon"
   description: "Pushes weather forecast icon to a SwitchBot Meter Pro or Meter Pro CO2 display."
@@ -21,7 +6,7 @@ meter_pro_set_weather:
       required: true
       selector:
         device:
-          integration: switchbot
+          integration: switchbot_enhanced
     icon:
       required: true
       selector:
@@ -46,7 +31,7 @@ meter_pro_set_external_sensor_mac:
       required: true
       selector:
         device:
-          integration: switchbot
+          integration: switchbot_enhanced
     mac_address:
       name: "Sensor MAC Address"
       description: "The BLE MAC address of the outdoor sensor (e.g. 'AA:BB:CC:DD:EE:FF', or '00:00:00:00:00:00' to clear)."

@@ -68,8 +68,6 @@ class SwitchbotEntity(
     @property
     def parsed_data(self) -> dict[str, Any]:
         """Return parsed device data for this entity."""
-        if isinstance(self.coordinator.device, switchbot.SwitchbotRelaySwitch2PM):
-            return self.coordinator.device.get_parsed_data(self._channel)
         return self.coordinator.device.parsed_data
 
     @property
@@ -145,7 +143,7 @@ class SwitchbotConnectionPolledEntity(SwitchbotEntity):
         self.coordinator.config_entry.async_create_background_task(
             self.hass,
             self.async_update_ha_state(force_refresh=True),
-            f"switchbot read {self.entity_id}",
+            f"switchbot_enhanced read {self.entity_id}",
         )
 
     @override

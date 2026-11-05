@@ -6,7 +6,7 @@ from bleak.backends.device import BLEDevice
 import switchbot
 from switchbot import SwitchbotModel
 
-from custom_components.switchbot.coordinator import SwitchbotDataUpdateCoordinator
+from custom_components.switchbot_enhanced.coordinator import SwitchbotDataUpdateCoordinator
 
 
 @pytest.fixture

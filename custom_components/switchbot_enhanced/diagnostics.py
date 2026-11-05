@@ -1,4 +1,4 @@
-"""Diagnostics support for switchbot integration."""
+"""Diagnostics support for switchbot_enhanced integration."""
 
 from typing import Any
 

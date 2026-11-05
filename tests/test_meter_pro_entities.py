@@ -6,11 +6,11 @@ import pytest
 from switchbot import SwitchbotModel
 
 from homeassistant.exceptions import ServiceValidationError
-from custom_components.switchbot.binary_sensor import (
+from custom_components.switchbot_enhanced.binary_sensor import (
     SwitchBotMeterProCO2PowerBinarySensor,
     async_setup_entry as async_setup_binary_sensor,
 )
-from custom_components.switchbot.button import (
+from custom_components.switchbot_enhanced.button import (
     SwitchBotMeterProCO2CalibrateButton,
     SwitchBotMeterProCO2ForceMeasurementButton,
     SwitchBotMeterProCO2SilenceAlarmButton,
@@ -18,7 +18,7 @@ from custom_components.switchbot.button import (
     SwitchBotMeterProSyncDateTimeButton,
     async_setup_entry as async_setup_button,
 )
-from custom_components.switchbot.number import (
+from custom_components.switchbot_enhanced.number import (
     SwitchBotMeterProCO2DisplayTimeOffsetNumber,
     SwitchBotMeterProCO2ThresholdGoodNumber,
     SwitchBotMeterProCO2ThresholdModerateNumber,
@@ -30,7 +30,7 @@ from custom_components.switchbot.number import (
     SwitchBotMeterProTemperatureOffsetNumber,
     async_setup_entry as async_setup_number,
 )
-from custom_components.switchbot.select import (
+from custom_components.switchbot_enhanced.select import (
     SwitchBotMeterProCO2BuzzerVolumeSelect,
     SwitchBotMeterProCO2TimeFormatSelect,
     SwitchBotMeterProCO2UpdateIntervalSelect,
@@ -39,16 +39,16 @@ from custom_components.switchbot.select import (
     SwitchBotMeterProWeatherConditionSelect,
     async_setup_entry as async_setup_select,
 )
-from custom_components.switchbot.sensor import (
+from custom_components.switchbot_enhanced.sensor import (
     SwitchBotMeterProFirmwareSensor,
     async_setup_entry as async_setup_sensor,
 )
-from custom_components.switchbot.services import (
+from custom_components.switchbot_enhanced.services import (
     ICON_MAP,
     async_meter_pro_set_external_sensor_mac,
     async_meter_pro_set_weather,
 )
-from custom_components.switchbot.switch import (
+from custom_components.switchbot_enhanced.switch import (
     SwitchBotMeterProBatteryIndicatorSwitch,
     SwitchBotMeterProButtonToggleDataSourceSwitch,
     SwitchBotMeterProButtonToggleUnitSwitch,
@@ -462,7 +462,7 @@ async def test_meter_pro_set_weather_service(mock_meter_pro_coordinator):
 
     mock_entry = MagicMock(runtime_data=mock_meter_pro_coordinator)
     with patch(
-        "custom_components.switchbot.services._async_get_switchbot_entry_for_device_id",
+        "custom_components.switchbot_enhanced.services._async_get_switchbot_entry_for_device_id",
         return_value=mock_entry,
     ):
         await async_meter_pro_set_weather(call)
@@ -485,7 +485,7 @@ async def test_meter_pro_set_weather_service_invalid_device():
     mock_entry = MagicMock(runtime_data=mock_coord)
 
     with patch(
-        "custom_components.switchbot.services._async_get_switchbot_entry_for_device_id",
+        "custom_components.switchbot_enhanced.services._async_get_switchbot_entry_for_device_id",
         return_value=mock_entry,
     ):
         with pytest.raises(ServiceValidationError):
@@ -518,7 +518,7 @@ async def test_meter_pro_set_external_sensor_mac_service(mock_meter_pro_coordina
 
     mock_entry = MagicMock(runtime_data=mock_meter_pro_coordinator)
     with patch(
-        "custom_components.switchbot.services._async_get_switchbot_entry_for_device_id",
+        "custom_components.switchbot_enhanced.services._async_get_switchbot_entry_for_device_id",
         return_value=mock_entry,
     ):
         await async_meter_pro_set_external_sensor_mac(call)

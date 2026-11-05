@@ -1,11 +1,10 @@
-"""Button support for SwitchBot devices."""
+"""Button support for SwitchBot Meter Pro devices."""
 
 import contextlib
 import logging
 from typing import override
 
 import switchbot
-from switchbot import SwitchbotModel
 
 from homeassistant.components import bluetooth
 from homeassistant.components.button import ButtonEntity
@@ -14,7 +13,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import CONF_LOCK_NIGHTLATCH, DEFAULT_LOCK_NIGHTLATCH
 from .coordinator import SwitchbotConfigEntry, SwitchbotDataUpdateCoordinator
 from .entity import SwitchbotEntity, exception_handler
 
@@ -30,19 +28,6 @@ async def async_setup_entry(
     """Set up Switchbot button platform."""
     coordinator = entry.runtime_data
     entities: list[ButtonEntity] = []
-
-    if isinstance(coordinator.device, switchbot.SwitchbotAirPurifier):
-        entities.extend(
-            [LightSensorButton(coordinator), ResetFilterUsageButton(coordinator)]
-        )
-
-    if isinstance(coordinator.device, switchbot.SwitchbotArtFrame):
-        entities.extend(
-            [
-                SwitchBotArtFrameNextButton(coordinator, "next_image"),
-                SwitchBotArtFramePrevButton(coordinator, "previous_image"),
-            ]
-        )
 
     if isinstance(coordinator.device, switchbot.SwitchbotMeterPro):
         entities.extend(
@@ -60,92 +45,8 @@ async def async_setup_entry(
                 ]
             )
 
-    if (
-        isinstance(coordinator.device, switchbot.SwitchbotLock)
-        and coordinator.model is SwitchbotModel.LOCK_ULTRA
-        and entry.options.get(CONF_LOCK_NIGHTLATCH, DEFAULT_LOCK_NIGHTLATCH)
-    ):
-        entities.append(HalfLockButton(coordinator))
-
     if entities:
         async_add_entities(entities)
-
-
-class LightSensorButton(SwitchbotEntity, ButtonEntity):
-    """Representation of a Switchbot light sensor button."""
-
-    _attr_translation_key = "light_sensor"
-    _device: switchbot.SwitchbotAirPurifier
-
-    def __init__(self, coordinator: SwitchbotDataUpdateCoordinator) -> None:
-        """Initialize the Switchbot light sensor button."""
-        super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.base_unique_id}_light_sensor"
-
-    @exception_handler
-    @override
-    async def async_press(self) -> None:
-        """Handle the button press."""
-        _LOGGER.debug("Toggling light sensor mode for %s", self._address)
-        await self._device.open_light_sensitive_switch()
-
-
-class ResetFilterUsageButton(SwitchbotEntity, ButtonEntity):
-    """Reset the purifier filter counter and verify the reported usage."""
-
-    _attr_translation_key = "reset_filter_usage"
-    _attr_entity_category = EntityCategory.CONFIG
-    _device: switchbot.SwitchbotAirPurifier
-
-    def __init__(self, coordinator: SwitchbotDataUpdateCoordinator) -> None:
-        """Initialize the filter reset button."""
-        super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.base_unique_id}_reset_filter_usage"
-
-    @exception_handler
-    @override
-    async def async_press(self) -> None:
-        """Reset the filter counter through the device's public API."""
-        self._last_run_success = False
-        self.async_write_ha_state()
-        self._last_run_success = await self._device.reset_filter_usage()
-        self.async_write_ha_state()
-
-
-class SwitchBotArtFrameButtonBase(SwitchbotEntity, ButtonEntity):
-    """Base class for Art Frame buttons."""
-
-    _device: switchbot.SwitchbotArtFrame
-
-    def __init__(
-        self, coordinator: SwitchbotDataUpdateCoordinator, translation_key: str
-    ) -> None:
-        """Initialize the button base."""
-        super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.base_unique_id}_{translation_key}"
-        self._attr_translation_key = translation_key
-
-
-class SwitchBotArtFrameNextButton(SwitchBotArtFrameButtonBase):
-    """Representation of a next image button."""
-
-    @exception_handler
-    @override
-    async def async_press(self) -> None:
-        """Handle the button press."""
-        _LOGGER.debug("Pressing next image button %s", self._address)
-        await self._device.next_image()
-
-
-class SwitchBotArtFramePrevButton(SwitchBotArtFrameButtonBase):
-    """Representation of a previous image button."""
-
-    @exception_handler
-    @override
-    async def async_press(self) -> None:
-        """Handle the button press."""
-        _LOGGER.debug("Pressing previous image button %s", self._address)
-        await self._device.prev_image()
 
 
 class SwitchBotMeterProSyncDateTimeButton(SwitchbotEntity, ButtonEntity):
@@ -197,25 +98,6 @@ class SwitchBotMeterProSyncDateTimeButton(SwitchbotEntity, ButtonEntity):
             utc_offset_hours=utc_offset_hours,
             utc_offset_minutes=utc_offset_minutes,
         )
-
-
-class HalfLockButton(SwitchbotEntity, ButtonEntity):
-    """Representation of a Half Lock button for Lock Ultra."""
-
-    _attr_translation_key = "half_lock"
-    _device: switchbot.SwitchbotLock
-
-    def __init__(self, coordinator: SwitchbotDataUpdateCoordinator) -> None:
-        """Initialize the Half Lock button."""
-        super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.base_unique_id}_half_lock"
-
-    @exception_handler
-    @override
-    async def async_press(self) -> None:
-        """Handle the button press."""
-        _LOGGER.debug("Sending half lock command for %s", self._address)
-        await self._device.half_lock()
 
 
 class SwitchBotMeterProRefreshButton(SwitchbotEntity, ButtonEntity):
