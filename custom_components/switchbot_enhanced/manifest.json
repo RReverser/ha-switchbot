@@ -41,7 +41,7 @@
   "loggers": ["switchbot"],
   "quality_scale": "gold",
   "requirements": [
-    "PySwitchbot @ git+https://github.com/mathismueller/pySwitchbot.git@feature/meter-pro-co2"
+    "PySwitchbot@git+https://github.com/mathismueller/pySwitchbot.git@feature/meter-pro-co2"
   ],
   "version": "2.0.0"
 }
