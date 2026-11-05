@@ -14,6 +14,7 @@ jobs:
     permissions:
       issues: write
     steps:
+      - uses: "actions/checkout@v4"
       - name: Build upstream status report
         id: report
         env:
