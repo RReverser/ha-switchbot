@@ -1,0 +1,53 @@
+name: Upstream watch
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  watch:
+    runs-on: "ubuntu-latest"
+    permissions:
+      issues: write
+    steps:
+      - name: Build upstream status report
+        id: report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CORE_COMMITS=$(gh api "repos/home-assistant/core/commits?path=homeassistant/components/switchbot&per_page=20" \
+            -q '.[] | "- " + .sha[0:7] + " " + .commit.author.date[0:10] + " " + (.commit.message | split("\n")[0])')
+          LIB_RELEASES=$(gh api "repos/sblibs/pySwitchbot/releases?per_page=5" \
+            -q '.[] | "- " + .tag_name + " (" + .published_at[0:10] + ")"')
+          FORK_SHA=$(gh api "repos/mathismueller/pySwitchbot/branches/feature/meter-pro-co2" \
+            -q '.commit.sha[0:7]')
+          {
+            echo "## Upstream status (auto-generated, weekly)"
+            echo ""
+            echo "Compare against \`docs/FORK.md\` (last synced state). If everything below is already covered, close this issue — it will be reopened next week."
+            echo ""
+            echo "### home-assistant/core — switchbot/ (latest 20)"
+            echo ""
+            echo "$CORE_COMMITS"
+            echo ""
+            echo "### sblibs/pySwitchbot — latest releases"
+            echo ""
+            echo "$LIB_RELEASES"
+            echo ""
+            echo "Our fork branch HEAD: \`mathismueller/pySwitchbot@feature/meter-pro-co2\` = \`$FORK_SHA\`"
+            echo "(manifest pins a commit SHA — bump it to take new library code.)"
+          } > /tmp/upstream-report.md
+      - name: Open or update tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NUMBER=$(gh issue list --state open --search "Upstream sync status in:title" --json number -q '.[0].number')
+          if [ -z "$NUMBER" ]; then
+            gh issue create --title "Upstream sync status" --body-file /tmp/upstream-report.md
+          else
+            gh issue edit "$NUMBER" --body-file /tmp/upstream-report.md
+          fi
