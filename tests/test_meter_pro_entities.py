@@ -22,6 +22,8 @@ from custom_components.switchbot_enhanced.number import (
     SwitchBotMeterProCO2DisplayTimeOffsetNumber,
     SwitchBotMeterProCO2ThresholdGoodNumber,
     SwitchBotMeterProCO2ThresholdModerateNumber,
+    SwitchBotMeterProCO2WeatherHumidityNumber,
+    SwitchBotMeterProCO2WeatherTemperatureNumber,
     SwitchBotMeterProComfortColdNumber,
     SwitchBotMeterProComfortDryNumber,
     SwitchBotMeterProComfortHotNumber,
@@ -280,6 +282,36 @@ async def test_weather_condition_select(mock_meter_pro_coordinator):
         assert entity.current_option == "pouring"
 
 
+async def test_weather_temperature_humidity_numbers(mock_meter_pro_co2_coordinator):
+    """Test weather temperature and humidity number entities."""
+    device = mock_meter_pro_co2_coordinator.device
+    device.get_weather = AsyncMock(
+        return_value={"temperature_c": -2.4, "humidity": 91}
+    )
+    temperature = SwitchBotMeterProCO2WeatherTemperatureNumber(
+        mock_meter_pro_co2_coordinator
+    )
+    humidity = SwitchBotMeterProCO2WeatherHumidityNumber(
+        mock_meter_pro_co2_coordinator
+    )
+
+    await temperature._async_read_value()
+    await humidity._async_read_value()
+    assert temperature.native_value == -2.4
+    assert humidity.native_value == 91
+
+    with patch.object(temperature, "async_write_ha_state"):
+        await temperature.async_set_native_value(12.3)
+    device.set_weather.assert_awaited_once_with(temperature_c=12.3)
+    assert temperature.native_value == 12.3
+
+    device.set_weather.reset_mock()
+    with patch.object(humidity, "async_write_ha_state"):
+        await humidity.async_set_native_value(55.0)
+    device.set_weather.assert_awaited_once_with(humidity=55.0)
+    assert humidity.native_value == 55
+
+
 async def test_select_setup_entry(mock_meter_pro_coordinator, mock_meter_pro_co2_coordinator):
     """Test async_setup_entry for select platform."""
     added_entities = []
@@ -393,6 +425,8 @@ async def test_number_setup_entry(mock_meter_pro_coordinator, mock_meter_pro_co2
     assert SwitchBotMeterProCO2ThresholdGoodNumber in types
     assert SwitchBotMeterProCO2ThresholdModerateNumber in types
     assert SwitchBotMeterProCO2DisplayTimeOffsetNumber in types
+    assert SwitchBotMeterProCO2WeatherTemperatureNumber in types
+    assert SwitchBotMeterProCO2WeatherHumidityNumber in types
 
 
 # =========================================================================
@@ -467,7 +501,30 @@ async def test_meter_pro_set_weather_service(mock_meter_pro_coordinator):
     ):
         await async_meter_pro_set_weather(call)
         mock_meter_pro_coordinator.device.set_weather.assert_awaited_once_with(
-            icon=1,
+            icon=1, temperature_c=None, humidity=None
+        )
+
+
+async def test_meter_pro_set_weather_service_temperature_humidity(
+    mock_meter_pro_coordinator,
+):
+    """Test meter_pro_set_weather passes temperature and humidity without an icon."""
+    call = MagicMock()
+    call.data = {
+        "device_id": "test_device_id",
+        "temperature": -3.5,
+        "humidity": 87.0,
+    }
+    call.hass = MagicMock()
+
+    mock_entry = MagicMock(runtime_data=mock_meter_pro_coordinator)
+    with patch(
+        "custom_components.switchbot_enhanced.services._async_get_switchbot_entry_for_device_id",
+        return_value=mock_entry,
+    ):
+        await async_meter_pro_set_weather(call)
+        mock_meter_pro_coordinator.device.set_weather.assert_awaited_once_with(
+            icon=None, temperature_c=-3.5, humidity=87.0
         )
 
 
@@ -552,6 +609,8 @@ async def test_entity_registry_enabled_default_rules(mock_meter_pro_co2_coordina
     assert SwitchBotMeterProCO2ThresholdModerateNumber(coord).entity_registry_enabled_default is False
     assert SwitchBotMeterProCO2DisplayTimeOffsetNumber(coord).entity_registry_enabled_default is False
     assert SwitchBotMeterProWeatherConditionSelect(coord).entity_registry_enabled_default is False
+    assert SwitchBotMeterProCO2WeatherTemperatureNumber(coord).entity_registry_enabled_default is False
+    assert SwitchBotMeterProCO2WeatherHumidityNumber(coord).entity_registry_enabled_default is False
 
     # Enabled by default
     assert SwitchBotMeterProComfortColdNumber(coord).entity_registry_enabled_default is True

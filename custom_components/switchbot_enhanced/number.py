@@ -57,6 +57,8 @@ async def async_setup_entry(
                     SwitchBotMeterProCO2DisplayTimeOffsetNumber(coordinator),
                     SwitchBotMeterProCO2ThresholdGoodNumber(coordinator),
                     SwitchBotMeterProCO2ThresholdModerateNumber(coordinator),
+                    SwitchBotMeterProCO2WeatherTemperatureNumber(coordinator),
+                    SwitchBotMeterProCO2WeatherHumidityNumber(coordinator),
                 ]
             )
         async_add_entities(entities)
@@ -403,3 +405,75 @@ class SwitchBotMeterProCO2ThresholdModerateNumber(
         """Keep native value."""
         if self._attr_native_value is None:
             self._attr_native_value = 1400
+
+
+class SwitchBotMeterProCO2WeatherTemperatureNumber(
+    SwitchbotConnectionPolledEntity, NumberEntity
+):
+    """Outdoor temperature shown next to the weather icon on Meter Pro CO2."""
+
+    _device: switchbot.SwitchbotMeterProCO2
+    _attr_device_class = NumberDeviceClass.TEMPERATURE
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "weather_temperature"
+    _attr_mode = NumberMode.BOX
+    _attr_native_min_value = -127.9
+    _attr_native_max_value = 127.9
+    _attr_native_step = 0.1
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, coordinator: SwitchbotDataUpdateCoordinator) -> None:
+        """Initialize the weather temperature number."""
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{coordinator.base_unique_id}_weather_temperature"
+
+    @exception_handler
+    @override
+    async def async_set_native_value(self, value: float) -> None:
+        """Set the displayed outdoor temperature."""
+        await self._device.set_weather(temperature_c=value)
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+    @override
+    async def _async_read_value(self) -> None:
+        """Fetch the displayed outdoor temperature."""
+        weather = await self._device.get_weather()
+        self._attr_native_value = weather["temperature_c"]
+
+
+class SwitchBotMeterProCO2WeatherHumidityNumber(
+    SwitchbotConnectionPolledEntity, NumberEntity
+):
+    """Outdoor humidity shown next to the weather icon on Meter Pro CO2."""
+
+    _device: switchbot.SwitchbotMeterProCO2
+    _attr_device_class = NumberDeviceClass.HUMIDITY
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "weather_humidity"
+    _attr_mode = NumberMode.BOX
+    _attr_native_min_value = 1
+    _attr_native_max_value = 99
+    _attr_native_step = 1
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, coordinator: SwitchbotDataUpdateCoordinator) -> None:
+        """Initialize the weather humidity number."""
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{coordinator.base_unique_id}_weather_humidity"
+
+    @exception_handler
+    @override
+    async def async_set_native_value(self, value: float) -> None:
+        """Set the displayed outdoor humidity."""
+        await self._device.set_weather(humidity=value)
+        self._attr_native_value = int(value)
+        self.async_write_ha_state()
+
+    @override
+    async def _async_read_value(self) -> None:
+        """Fetch the displayed outdoor humidity."""
+        weather = await self._device.get_weather()
+        self._attr_native_value = weather["humidity"]

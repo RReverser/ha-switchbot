@@ -55,6 +55,7 @@ Runs side-by-side with the core Home Assistant `switchbot` integration under its
 * **Comfort Humidity Thresholds**:
   * `number.comfort_dry`: Lower humidity threshold before display segments show `DRY` (%).
   * `number.comfort_wet`: Upper humidity threshold before display segments show `WET` (%).
+* **Weather Temperature / Humidity (`number.weather_temperature`, `number.weather_humidity`)**: Outdoor temperature and humidity shown next to the weather icon on the Meter Pro CO2 (disabled by default).
 * **CO2 Air Quality Thresholds**:
   * `number.co2_threshold_good`: Boundary between Good (Green) and Moderate (Orange) air quality (ppm).
   * `number.co2_threshold_moderate`: Boundary between Moderate (Orange) and Poor (Red) air quality (ppm).
@@ -75,12 +76,14 @@ Runs side-by-side with the core Home Assistant `switchbot` integration under its
 * **USB-C Power Status (`binary_sensor.usb_c_status`)**: Diagnostic binary sensor indicating whether the Meter Pro CO2 is connected to USB-C constant power (`Connected` / `Disconnected`), updated in real time via broadcast advertisements and GATT connection.
 
 ### 6. Actions / Services (`service`)
-* **`switchbot_enhanced.meter_pro_set_weather`**: Push current local weather forecast condition icon to the Meter Pro LCD header.
+* **`switchbot_enhanced.meter_pro_set_weather`**: Push the weather forecast icon, outdoor temperature (°C) and/or outdoor humidity (%) to the Meter Pro CO2 LCD header. Omitted fields keep their current values.
   ```yaml
   action: switchbot_enhanced.meter_pro_set_weather
   data:
     device_id: YOUR_METER_PRO_DEVICE_ID
     icon: rainy # Options: sunny, partly_cloudy, cloudy, rainy, pouring, heavy_rain, snowy, light_snow, heavy_snow, none
+    temperature: 8.5 # -127.9..127.9
+    humidity: 82 # 1..99
   ```
 * **`switchbot_enhanced.meter_pro_set_external_sensor_mac`**: Pair an external sensor MAC address (e.g. SwitchBot Outdoor Meter or emulated ESP32 beacon) to the Meter Pro hardware display. See the [ESPHome External Sensor Emulation](#external--outdoor-sensor-emulation-via-esphome) section below for details.
   ```yaml

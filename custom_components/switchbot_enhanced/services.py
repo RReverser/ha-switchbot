@@ -21,6 +21,8 @@ SERVICE_SET_WEATHER = "meter_pro_set_weather"
 SERVICE_SET_EXTERNAL_SENSOR_MAC = "meter_pro_set_external_sensor_mac"
 
 ATTR_ICON = "icon"
+ATTR_TEMPERATURE = "temperature"
+ATTR_HUMIDITY = "humidity"
 ATTR_MAC_ADDRESS = "mac_address"
 ATTR_SLOT = "slot"
 ATTR_SWITCH_DISPLAY = "switch_display"
@@ -41,7 +43,9 @@ ICON_MAP = {
 SCHEMA_SET_WEATHER_SERVICE = vol.Schema(
     {
         vol.Required(ATTR_DEVICE_ID): cv.string,
-        vol.Required(ATTR_ICON): vol.In(list(ICON_MAP.keys())),
+        vol.Optional(ATTR_ICON): vol.In(list(ICON_MAP.keys())),
+        vol.Optional(ATTR_TEMPERATURE): vol.Coerce(float),
+        vol.Optional(ATTR_HUMIDITY): vol.Coerce(float),
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -70,9 +74,9 @@ def _async_get_switchbot_entry_for_device_id(
 
 
 async def async_meter_pro_set_weather(call: ServiceCall) -> None:
-    """Push weather condition icon to Meter Pro."""
+    """Push weather icon, temperature and humidity to Meter Pro."""
     device_id: str = call.data[ATTR_DEVICE_ID]
-    icon_str: str = call.data[ATTR_ICON]
+    icon_str: str | None = call.data.get(ATTR_ICON)
 
     entry = _async_get_switchbot_entry_for_device_id(call.hass, device_id)
     coordinator = entry.runtime_data
@@ -89,9 +93,10 @@ async def async_meter_pro_set_weather(call: ServiceCall) -> None:
             ):
                 coordinator.device._device = ble_device
 
-    icon_val = ICON_MAP[icon_str]
     await coordinator.device.set_weather(
-        icon=icon_val,
+        icon=ICON_MAP[icon_str] if icon_str is not None else None,
+        temperature_c=call.data.get(ATTR_TEMPERATURE),
+        humidity=call.data.get(ATTR_HUMIDITY),
     )
 
 

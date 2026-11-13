@@ -133,6 +133,12 @@
       },
       "temperature_offset": {
         "name": "Temperature calibration offset"
+      },
+      "weather_humidity": {
+        "name": "Weather humidity"
+      },
+      "weather_temperature": {
+        "name": "Weather temperature"
       }
     },
     "select": {
