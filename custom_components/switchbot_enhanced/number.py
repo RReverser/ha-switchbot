@@ -410,7 +410,7 @@ class SwitchBotMeterProCO2ThresholdModerateNumber(
 class SwitchBotMeterProCO2WeatherTemperatureNumber(
     SwitchbotConnectionPolledEntity, NumberEntity
 ):
-    """Outdoor temperature shown next to the weather icon on Meter Pro CO2."""
+    """Outdoor (weather) temperature stored on Meter Pro CO2."""
 
     _device: switchbot.SwitchbotMeterProCO2
     _attr_device_class = NumberDeviceClass.TEMPERATURE
@@ -446,7 +446,7 @@ class SwitchBotMeterProCO2WeatherTemperatureNumber(
 class SwitchBotMeterProCO2WeatherHumidityNumber(
     SwitchbotConnectionPolledEntity, NumberEntity
 ):
-    """Outdoor humidity shown next to the weather icon on Meter Pro CO2."""
+    """Outdoor (weather) humidity stored on Meter Pro CO2."""
 
     _device: switchbot.SwitchbotMeterProCO2
     _attr_device_class = NumberDeviceClass.HUMIDITY
