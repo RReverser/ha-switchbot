@@ -55,7 +55,7 @@ Runs side-by-side with the core Home Assistant `switchbot` integration under its
 * **Comfort Humidity Thresholds**:
   * `number.comfort_dry`: Lower humidity threshold before display segments show `DRY` (%).
   * `number.comfort_wet`: Upper humidity threshold before display segments show `WET` (%).
-* **Weather Temperature / Humidity (`number.weather_temperature`, `number.weather_humidity`)**: Outdoor (weather) temperature and humidity stored on the Meter Pro CO2 (disabled by default). The meter only shows them when its temperature and humidity source is set to local weather, which this integration cannot set yet; the "Outdoor sensor display" switch only changes the IN/OUT icon.
+* **Weather Temperature / Humidity (`number.weather_temperature`, `number.weather_humidity`)**: Outdoor (weather) temperature and humidity stored on the Meter Pro CO2 (disabled by default). The meter shows them in a display slot whose source is local weather (see `meter_pro_set_display_source`); the "Outdoor sensor display" switch only changes the IN/OUT icon.
 * **CO2 Air Quality Thresholds**:
   * `number.co2_threshold_good`: Boundary between Good (Green) and Moderate (Orange) air quality (ppm).
   * `number.co2_threshold_moderate`: Boundary between Moderate (Orange) and Poor (Red) air quality (ppm).
@@ -76,7 +76,7 @@ Runs side-by-side with the core Home Assistant `switchbot` integration under its
 * **USB-C Power Status (`binary_sensor.usb_c_status`)**: Diagnostic binary sensor indicating whether the Meter Pro CO2 is connected to USB-C constant power (`Connected` / `Disconnected`), updated in real time via broadcast advertisements and GATT connection.
 
 ### 6. Actions / Services (`service`)
-* **`switchbot_enhanced.meter_pro_set_weather`**: Push the weather forecast icon, outdoor temperature (°C) and/or outdoor humidity (%) to the Meter Pro CO2. The icon shows in the LCD header; the temperature and humidity are stored but not shown (see above). Omitted fields keep their current values.
+* **`switchbot_enhanced.meter_pro_set_weather`**: Push the weather forecast icon, outdoor temperature (°C) and/or outdoor humidity (%) to the Meter Pro CO2. The icon shows in the LCD header; the temperature and humidity show in a display slot whose source is local weather. Omitted fields keep their current values.
   ```yaml
   action: switchbot_enhanced.meter_pro_set_weather
   data:
@@ -84,6 +84,19 @@ Runs side-by-side with the core Home Assistant `switchbot` integration under its
     icon: rainy # Options: sunny, partly_cloudy, cloudy, rainy, pouring, heavy_rain, snowy, light_snow, heavy_snow, none
     temperature: 8.5 # -127.9..127.9
     humidity: 82 # 1..99
+  ```
+* **`switchbot_enhanced.meter_pro_set_display_source`**: Set the temperature and humidity source of a display slot (`none`, `sensor`, `local_weather` or `outdoor_meter`) and its IN/OUT icon. On the Meter Pro CO2 the screen shows slot 2, and the top button switches between the two slots. Example: local weather on the main screen, own sensor one button press away:
+  ```yaml
+  - action: switchbot_enhanced.meter_pro_set_display_source
+    data:
+      device_id: <device_id>
+      slot: 2
+      source: local_weather
+  - action: switchbot_enhanced.meter_pro_set_display_source
+    data:
+      device_id: <device_id>
+      slot: 1
+      source: sensor
   ```
 * **`switchbot_enhanced.meter_pro_set_external_sensor_mac`**: Pair an external sensor MAC address (e.g. SwitchBot Outdoor Meter or emulated ESP32 beacon) to the Meter Pro hardware display. See the [ESPHome External Sensor Emulation](#external--outdoor-sensor-emulation-via-esphome) section below for details.
   ```yaml

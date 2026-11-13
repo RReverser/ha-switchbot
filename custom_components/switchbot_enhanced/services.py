@@ -26,6 +26,7 @@ from .coordinator import SwitchbotConfigEntry
 SERVICE_SET_WEATHER = "meter_pro_set_weather"
 SERVICE_SET_EXTERNAL_SENSOR_MAC = "meter_pro_set_external_sensor_mac"
 SERVICE_SEND_RAW_COMMAND = "meter_pro_send_raw_command"
+SERVICE_SET_DISPLAY_SOURCE = "meter_pro_set_display_source"
 
 ATTR_ICON = "icon"
 ATTR_TEMPERATURE = "temperature"
@@ -34,6 +35,8 @@ ATTR_MAC_ADDRESS = "mac_address"
 ATTR_SLOT = "slot"
 ATTR_SWITCH_DISPLAY = "switch_display"
 ATTR_COMMAND = "command"
+ATTR_SOURCE = "source"
+ATTR_OUTDOOR_ICON = "outdoor_icon"
 
 ICON_MAP = {
     "none": 0,
@@ -46,6 +49,13 @@ ICON_MAP = {
     "snowy": 6,
     "light_snow": 6,
     "heavy_snow": 7,
+}
+
+SOURCE_MAP = {
+    "none": switchbot.MeterProDisplaySource.NONE,
+    "outdoor_meter": switchbot.MeterProDisplaySource.OUTDOOR_METER,
+    "sensor": switchbot.MeterProDisplaySource.SENSOR,
+    "local_weather": switchbot.MeterProDisplaySource.LOCAL_WEATHER,
 }
 
 SCHEMA_SET_WEATHER_SERVICE = vol.Schema(
@@ -66,6 +76,17 @@ SCHEMA_SET_EXTERNAL_SENSOR_MAC_SERVICE = vol.Schema(
             vol.Coerce(int), vol.In([1, 2])
         ),
         vol.Optional(ATTR_SWITCH_DISPLAY, default=True): cv.boolean,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+
+SCHEMA_SET_DISPLAY_SOURCE_SERVICE = vol.Schema(
+    {
+        vol.Required(ATTR_DEVICE_ID): cv.string,
+        vol.Required(ATTR_SLOT): vol.All(vol.Coerce(int), vol.In([1, 2])),
+        vol.Required(ATTR_SOURCE): vol.In(list(SOURCE_MAP.keys())),
+        vol.Optional(ATTR_OUTDOOR_ICON): cv.boolean,
+        vol.Optional(ATTR_MAC_ADDRESS, default=""): cv.string,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -145,6 +166,28 @@ async def async_meter_pro_set_external_sensor_mac(call: ServiceCall) -> None:
     )
 
 
+async def async_meter_pro_set_display_source(call: ServiceCall) -> None:
+    """Set the data source and IN/OUT icon of a Meter Pro display slot."""
+    entry = _async_get_switchbot_entry_for_device_id(
+        call.hass, call.data[ATTR_DEVICE_ID]
+    )
+    coordinator = entry.runtime_data
+    if not isinstance(coordinator.device, switchbot.SwitchbotMeterPro):
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="not_meter_pro_device",
+        )
+    source_str: str = call.data[ATTR_SOURCE]
+    await coordinator.device.set_display_source(
+        slot=call.data[ATTR_SLOT],
+        source=SOURCE_MAP[source_str],
+        outdoor_icon=call.data.get(
+            ATTR_OUTDOOR_ICON, source_str in ("outdoor_meter", "local_weather")
+        ),
+        mac_address=call.data[ATTR_MAC_ADDRESS],
+    )
+
+
 async def async_meter_pro_send_raw_command(call: ServiceCall) -> ServiceResponse:
     """Send a raw hex command to a Meter Pro and return its raw response."""
     entry = _async_get_switchbot_entry_for_device_id(
@@ -174,6 +217,12 @@ def async_setup_services(hass: HomeAssistant) -> None:
         SERVICE_SET_EXTERNAL_SENSOR_MAC,
         async_meter_pro_set_external_sensor_mac,
         schema=SCHEMA_SET_EXTERNAL_SENSOR_MAC_SERVICE,
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_SET_DISPLAY_SOURCE,
+        async_meter_pro_set_display_source,
+        schema=SCHEMA_SET_DISPLAY_SOURCE_SERVICE,
     )
     hass.services.async_register(
         DOMAIN,

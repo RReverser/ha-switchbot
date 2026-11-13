@@ -1,6 +1,6 @@
 meter_pro_set_weather:
   name: "Meter Pro: Set Weather"
-  description: "Pushes the weather forecast icon, outdoor temperature and/or humidity to a SwitchBot Meter Pro CO2. The icon shows on the display; temperature and humidity are stored but not shown. Omitted fields keep their current values."
+  description: "Pushes the weather forecast icon, outdoor temperature and/or humidity to a SwitchBot Meter Pro CO2. The icon shows in the header; temperature and humidity show in a display slot whose source is local weather. Omitted fields keep their current values."
   fields:
     device_id:
       required: true
@@ -80,6 +80,53 @@ meter_pro_set_external_sensor_mac:
       default: true
       selector:
         boolean:
+
+meter_pro_set_display_source:
+  name: "Meter Pro: Set Display Source"
+  description: "Sets where a Meter Pro CO2 display slot takes its temperature and humidity from, and its IN/OUT icon. The screen shows slot 2; the top button switches between the slots."
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: switchbot_enhanced
+    slot:
+      name: "Slot"
+      required: true
+      selector:
+        select:
+          options:
+            - label: "Slot 1"
+              value: "1"
+            - label: "Slot 2 (shown by default)"
+              value: "2"
+    source:
+      name: "Source"
+      required: true
+      selector:
+        select:
+          options:
+            - label: "None"
+              value: "none"
+            - label: "Own sensor"
+              value: "sensor"
+            - label: "Local weather (from Set Weather)"
+              value: "local_weather"
+            - label: "SwitchBot Outdoor Meter"
+              value: "outdoor_meter"
+    outdoor_icon:
+      name: "OUT icon"
+      description: "Show OUT instead of IN. Defaults to OUT for local weather and Outdoor Meter, IN otherwise."
+      required: false
+      selector:
+        boolean:
+    mac_address:
+      name: "Outdoor Meter MAC"
+      description: "Only used with the Outdoor Meter source."
+      required: false
+      example: "AA:BB:CC:DD:EE:FF"
+      selector:
+        text:
 
 meter_pro_send_raw_command:
   name: "Meter Pro: Send Raw Command"
