@@ -14,7 +14,7 @@ to pull upstream work in.
 | Upstream | State |
 | --- | --- |
 | `homeassistant/core` `switchbot/` component | Reviewed through `12f6a28` (2026-11-05). Ported: `None`-returning config entry methods, dropped `_set_confirm_only`. Already aligned: `connectivity`, `categories`, deferred-first-read polling, non-blocking migration, `ConfigType` import source, typed config entries. |
-| `sblibs/pySwitchbot` (via our fork branch) | Fork branch includes everything through upstream `3.1.0` (`6d4feac`); zero upstream commits outstanding. Manifest pins `RReverser/pySwitchbot` commit `34969c1`. Upstream has **not** merged weather/threshold/calibration/external-MAC support, so the fork branch is still required. |
+| `sblibs/pySwitchbot` (via our fork branch) | Fork branch includes everything through upstream `3.1.0` (`6d4feac`); zero upstream commits outstanding. Manifest pins `RReverser/pySwitchbot` commit `19580b0`. Upstream has **not** merged weather/threshold/calibration/external-MAC support, so the fork branch is still required. |
 
 ## Intentional divergences (do not "port back")
 

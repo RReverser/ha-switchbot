@@ -41,7 +41,7 @@
   "loggers": ["switchbot"],
   "quality_scale": "gold",
   "requirements": [
-    "PySwitchbot@git+https://github.com/RReverser/pySwitchbot.git@34969c180bb95fb45939b0ac6f43dc5f7baa5d76"
+    "PySwitchbot@git+https://github.com/RReverser/pySwitchbot.git@19580b01cf390f953fe265f53044127540ae9c42"
   ],
   "version": "2.0.0"
 }
