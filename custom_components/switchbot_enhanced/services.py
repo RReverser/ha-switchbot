@@ -10,7 +10,13 @@ import switchbot
 
 from homeassistant.components import bluetooth
 from homeassistant.const import ATTR_DEVICE_ID
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import (
+    HomeAssistant,
+    ServiceCall,
+    ServiceResponse,
+    SupportsResponse,
+    callback,
+)
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv, service
 
@@ -19,6 +25,7 @@ from .coordinator import SwitchbotConfigEntry
 
 SERVICE_SET_WEATHER = "meter_pro_set_weather"
 SERVICE_SET_EXTERNAL_SENSOR_MAC = "meter_pro_set_external_sensor_mac"
+SERVICE_SEND_RAW_COMMAND = "meter_pro_send_raw_command"
 
 ATTR_ICON = "icon"
 ATTR_TEMPERATURE = "temperature"
@@ -26,6 +33,7 @@ ATTR_HUMIDITY = "humidity"
 ATTR_MAC_ADDRESS = "mac_address"
 ATTR_SLOT = "slot"
 ATTR_SWITCH_DISPLAY = "switch_display"
+ATTR_COMMAND = "command"
 
 ICON_MAP = {
     "none": 0,
@@ -58,6 +66,14 @@ SCHEMA_SET_EXTERNAL_SENSOR_MAC_SERVICE = vol.Schema(
             vol.Coerce(int), vol.In([1, 2])
         ),
         vol.Optional(ATTR_SWITCH_DISPLAY, default=True): cv.boolean,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+
+SCHEMA_SEND_RAW_COMMAND_SERVICE = vol.Schema(
+    {
+        vol.Required(ATTR_DEVICE_ID): cv.string,
+        vol.Required(ATTR_COMMAND): cv.string,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -129,6 +145,21 @@ async def async_meter_pro_set_external_sensor_mac(call: ServiceCall) -> None:
     )
 
 
+async def async_meter_pro_send_raw_command(call: ServiceCall) -> ServiceResponse:
+    """Send a raw hex command to a Meter Pro and return its raw response."""
+    entry = _async_get_switchbot_entry_for_device_id(
+        call.hass, call.data[ATTR_DEVICE_ID]
+    )
+    coordinator = entry.runtime_data
+    if not isinstance(coordinator.device, switchbot.SwitchbotMeterPro):
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="not_meter_pro_device",
+        )
+    result = await coordinator.device._send_command(call.data[ATTR_COMMAND])
+    return {"response": result.hex() if result is not None else None}
+
+
 @callback
 def async_setup_services(hass: HomeAssistant) -> None:
     """Set up the services for the SwitchBot integration."""
@@ -143,4 +174,11 @@ def async_setup_services(hass: HomeAssistant) -> None:
         SERVICE_SET_EXTERNAL_SENSOR_MAC,
         async_meter_pro_set_external_sensor_mac,
         schema=SCHEMA_SET_EXTERNAL_SENSOR_MAC_SERVICE,
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_SEND_RAW_COMMAND,
+        async_meter_pro_send_raw_command,
+        schema=SCHEMA_SEND_RAW_COMMAND_SERVICE,
+        supports_response=SupportsResponse.ONLY,
     )

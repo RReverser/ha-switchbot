@@ -80,3 +80,20 @@ meter_pro_set_external_sensor_mac:
       default: true
       selector:
         boolean:
+
+meter_pro_send_raw_command:
+  name: "Meter Pro: Send Raw Command"
+  description: "Sends a raw BLE command (hex, e.g. 570f690701) to a Meter Pro and returns its raw hex response. For protocol debugging."
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: switchbot_enhanced
+    command:
+      name: "Command"
+      description: "Raw command as hex."
+      required: true
+      example: "570f690701"
+      selector:
+        text:
