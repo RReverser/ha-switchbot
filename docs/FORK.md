@@ -2,8 +2,10 @@
 
 This integration (`switchbot_enhanced`) is a fork of Home Assistant core's
 `switchbot` integration, slimmed to Meter Pro / Meter Pro CO2. The BLE
-library comes from the `feature/meter-pro-co2` branch of
-`mathismueller/pySwitchbot` (itself branched from `sblibs/pySwitchbot`).
+library comes from the `meter-pro-co2-weather-unset` branch of
+`RReverser/pySwitchbot`, which is `mathismueller/pySwitchbot`'s
+`feature/meter-pro-co2` branch (itself branched from `sblibs/pySwitchbot`)
+plus a fix for the unset weather icon.
 Upstream moves on both sides, so this file records where we stand and how
 to pull upstream work in.
 
@@ -12,7 +14,7 @@ to pull upstream work in.
 | Upstream | State |
 | --- | --- |
 | `homeassistant/core` `switchbot/` component | Reviewed through `12f6a28` (2026-11-05). Ported: `None`-returning config entry methods, dropped `_set_confirm_only`. Already aligned: `connectivity`, `categories`, deferred-first-read polling, non-blocking migration, `ConfigType` import source, typed config entries. |
-| `sblibs/pySwitchbot` (via our fork branch) | Fork branch includes everything through upstream `3.1.0` (`6d4feac`); zero upstream commits outstanding. Manifest pins fork commit `87e9d51`. Upstream has **not** merged weather/threshold/calibration/external-MAC support, so the fork branch is still required. |
+| `sblibs/pySwitchbot` (via our fork branch) | Fork branch includes everything through upstream `3.1.0` (`6d4feac`); zero upstream commits outstanding. Manifest pins `RReverser/pySwitchbot` commit `34969c1`. Upstream has **not** merged weather/threshold/calibration/external-MAC support, so the fork branch is still required. |
 
 ## Intentional divergences (do not "port back")
 
@@ -62,7 +64,7 @@ git rebase upstream/main
 cd pySwitchbot && ../.venv/bin/pytest tests/test_meter_pro.py tests/test_meter_pro_weather.py
 git push --force-with-lease
 # 3. Pin the new fork commit in this repo's manifest.json
-#    ("PySwitchbot@git+https://github.com/mathismueller/pySwitchbot.git@<SHA>"),
+#    ("PySwitchbot@git+https://github.com/RReverser/pySwitchbot.git@<SHA>"),
 #    update the SHA in the table above, push, and cut a release.
 ```
 
