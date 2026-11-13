@@ -1,6 +1,6 @@
 meter_pro_set_weather:
   name: "Meter Pro: Set Weather"
-  description: "Pushes the weather forecast icon, outdoor temperature and/or humidity to a SwitchBot Meter Pro CO2 display. Omitted fields keep their current values."
+  description: "Pushes the weather forecast icon, outdoor temperature and/or humidity to a SwitchBot Meter Pro CO2. The icon shows on the display; temperature and humidity are stored but not shown. Omitted fields keep their current values."
   fields:
     device_id:
       required: true
